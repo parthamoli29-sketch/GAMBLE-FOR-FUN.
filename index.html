@@ -11,10 +11,23 @@
             --jackpot-color: #ff00ff;
             --jackpot-glow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
             --restart-color: #ff4444;
+            --shop-color: #ffaa00;
+            --shop-glow: 0 0 15px #ffaa00, 0 0 30px #ffaa00;
+            --admin-color: #ff0055;
+            --admin-glow: 0 0 20px #ff0055, 0 0 40px #ff0055;
+            --diamond-color: #00bfff;
+            --diamond-glow: 0 0 15px #00bfff, 0 0 30px #00bfff;
         }
 
         body {
-            background-color: black;
+            background-color: #05050a;
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, #100020 0%, #000000 100%);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
+            background-position: center center;
+            
             color: white;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
@@ -34,25 +47,27 @@
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 100%;
             height: 100%;
+            position: relative;
         }
 
         .zoomed {
-            transform: scale(1.5); /* Makes the screen big during roll */
+            transform: scale(1.5);
         }
 
         /* Branding */
         #credits {
             position: fixed;
             bottom: 20px;
+            left: 20px;
             color: var(--neon-color);
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             text-shadow: var(--neon-glow);
             letter-spacing: 3px;
             pointer-events: none;
         }
 
-        /* Coin Meter */
+        /* Stats Meters (Coins & Diamonds) */
         #stats {
             position: fixed;
             top: 20px;
@@ -67,22 +82,52 @@
         }
 
         #coin-meter {
-            font-size: 28px;
+            font-size: 24px;
             color: #ffd700;
             font-weight: bold;
         }
 
-        /* Probability Section (Fake Visuals) */
+        #diamond-meter {
+            font-size: 24px;
+            color: var(--diamond-color);
+            font-weight: bold;
+            text-shadow: var(--diamond-glow);
+        }
+
+        /* Probability Section */
         #probability-display {
             position: fixed;
             top: 20px;
             left: 20px;
-            border: 1px solid #444;
+            border: 1px solid #333;
             padding: 15px;
-            font-size: 13px;
-            background: rgba(20, 20, 20, 0.9);
+            font-size: 12px;
+            background: rgba(10, 10, 15, 0.9);
             border-radius: 5px;
             z-index: 10;
+            line-height: 1.4;
+        }
+
+        /* Mystery Box Hanging Element */
+        #hanging-charm {
+            position: absolute;
+            top: -35px;
+            background: rgba(10, 10, 15, 0.95);
+            border: 2px solid var(--shop-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--shop-color);
+            box-shadow: var(--shop-glow);
+            display: none;
+            z-index: 5;
+            animation: swing 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(-3deg); }
+            100% { transform: rotate(3deg); }
         }
 
         /* The Roller */
@@ -96,17 +141,19 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            background: #0a0a0a;
-            margin-bottom: 40px;
+            background: rgba(10, 10, 10, 0.95);
+            margin-bottom: 20px;
         }
 
         #roller-text {
-            font-size: 45px;
+            font-size: 28px;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 5px;
+            letter-spacing: 2px;
             text-shadow: var(--neon-glow);
             color: var(--neon-color);
+            text-align: center;
+            padding: 0 10px;
         }
 
         .spinning { 
@@ -119,15 +166,15 @@
             to { opacity: 0.4; transform: translateY(2px); }
         }
 
-        /* Buttons */
-        .btn-container { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        /* Buttons & Panels */
+        .btn-container { display: flex; flex-direction: column; gap: 12px; align-items: center; }
 
         button {
-            background: transparent;
+            background: rgba(0, 0, 0, 0.8);
             border: 2px solid var(--neon-color);
             color: var(--neon-color);
-            padding: 15px 50px;
-            font-size: 20px;
+            padding: 12px 40px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
@@ -153,12 +200,189 @@
             box-shadow: 0 0 20px var(--restart-color);
         }
 
+        /* Always-available Manual Replay Button */
+        #manual-restart-btn {
+            border-color: #ff8800;
+            color: #ff8800;
+            box-shadow: 0 0 5px #ff8800;
+        }
+        #manual-restart-btn:hover {
+            background: #ff8800;
+            color: black;
+            box-shadow: 0 0 15px #ff8800;
+        }
+
+        #shop-toggle-btn {
+            border-color: var(--shop-color);
+            color: var(--shop-color);
+            box-shadow: 0 0 5px var(--shop-color);
+        }
+        #shop-toggle-btn:hover {
+            background: var(--shop-color);
+            color: black;
+            box-shadow: var(--shop-glow);
+        }
+
+        #diamond-shop-btn {
+            border-color: var(--diamond-color);
+            color: var(--diamond-color);
+            box-shadow: 0 0 5px var(--diamond-color);
+        }
+        #diamond-shop-btn:hover {
+            background: var(--diamond-color);
+            color: black;
+            box-shadow: var(--diamond-glow);
+        }
+
+        #admin-shop-btn {
+            border-color: var(--admin-color);
+            color: var(--admin-color);
+            box-shadow: 0 0 10px var(--admin-color);
+            display: none;
+        }
+        #admin-shop-btn:hover {
+            background: var(--admin-color);
+            color: white;
+            box-shadow: var(--admin-glow);
+        }
+
         button:disabled { opacity: 0.2; cursor: not-allowed; }
 
+        /* Secret Code Input Box (Bottom Right) */
+        #secret-box-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #333;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            gap: 6px;
+            box-shadow: 0 0 10px rgba(0,255,204,0.1);
+        }
+
+        #secret-input {
+            background: black;
+            border: 1px solid var(--neon-color);
+            color: white;
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            outline: none;
+            width: 160px;
+        }
+
+        #secret-submit {
+            background: var(--neon-color);
+            color: black;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shop-content, .diamond-content, .admin-shop-content, .confirm-content {
+            background: #0a0a12;
+            border: 3px solid var(--shop-color);
+            box-shadow: var(--shop-glow);
+            padding: 30px;
+            border-radius: 15px;
+            width: 440px;
+            text-align: center;
+        }
+
+        .diamond-content {
+            border-color: var(--diamond-color);
+            box-shadow: var(--diamond-glow);
+        }
+
+        .admin-shop-content {
+            border-color: var(--admin-color);
+            box-shadow: var(--admin-glow);
+        }
+
+        .confirm-content {
+            border-color: var(--restart-color);
+            box-shadow: 0 0 20px var(--restart-color);
+        }
+
+        .shop-item, .diamond-item, .admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 170, 0, 0.05);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .diamond-item {
+            background: rgba(0, 191, 255, 0.05);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+        }
+
+        .admin-item {
+            background: rgba(255, 0, 85, 0.05);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+        }
+
+        .shop-item button, .diamond-item button, .admin-item button {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .diamond-item button {
+            border-color: var(--diamond-color);
+            color: var(--diamond-color);
+        }
+        .diamond-item button:hover:not(:disabled) {
+            background: var(--diamond-color);
+            color: black;
+            box-shadow: var(--diamond-glow);
+        }
+
+        .admin-item button {
+            border-color: var(--admin-color);
+            color: var(--admin-color);
+        }
+        .admin-item button:hover:not(:disabled) {
+            background: var(--admin-color);
+            color: white;
+            box-shadow: var(--admin-glow);
+        }
+
+        .close-shop, .close-diamond, .close-admin {
+            margin-top: 15px;
+            border-color: #aaa;
+            color: #aaa;
+            padding: 8px 25px;
+            font-size: 14px;
+        }
+        .close-shop:hover { background: #aaa; color: black; }
+        .close-diamond:hover { background: #aaa; color: black; }
+        .close-admin:hover { background: #aaa; color: black; }
+
         /* Particles */
-        .particle { position: absolute; pointer-events: none; z-index: 100; }
+        .particle { position: absolute; pointer-events: none; z-index: 150; }
         .star { animation: flyOut 1.2s forwards; font-size: 24px; }
         .trash { animation: fallDown 1.5s forwards; font-size: 20px; }
+        .diamond-particle { animation: flyOut 1.2s forwards; font-size: 24px; }
 
         @keyframes flyOut { 
             0% { transform: translate(0,0) scale(1); }
@@ -169,7 +393,7 @@
             100% { transform: translate(var(--tx), 600px) rotate(180deg); opacity: 0; } 
         }
 
-        #status-msg { height: 30px; font-weight: bold; color: #aaa; text-transform: uppercase; margin-top: 10px;}
+        #status-msg { height: 30px; font-weight: bold; color: #aaa; text-transform: uppercase; margin-top: 8px;}
     </style>
 </head>
 <body>
@@ -177,51 +401,288 @@
     <!-- UI Overlays -->
     <div id="probability-display">
         <strong style="color:var(--neon-color)">SYSTEM CHANCES:</strong><br>
-        • Null: 50%<br>
-        • Re-Roll: 30%<br>
-        • Jackpot: 20%<br>
-        <div style="border-top: 1px solid #444; margin-top: 10px; font-size: 11px; color: #ff00ff; padding-top: 5px;">
-            RE-ROLL ACTIVE:<br>
-            Probability boost detected...
+        • Null: <span id="stat-null">34.5</span>%<br>
+        • Re-Roll: <span id="stat-reroll">20</span>%<br>
+        • Jackpot (+5000): <span id="stat-jackpot">3</span>%<br>
+        • 💎 Diamond Drop: <span id="stat-diamond">0.5</span>%<br>
+        • 600 Coins: <span id="stat-600">5</span>%<br>
+        • 500 Coins: <span id="stat-500">10</span>%<br>
+        • 250 Coins: <span id="stat-250">10</span>%<br>
+        • 100 Coins: <span id="stat-100">17</span>%<br>
+        <div style="border-top: 1px solid #333; margin-top: 8px; font-size: 11px; color: var(--shop-color); padding-top: 4px;" id="active-perks">
+            MYSTERY BOX: LOCKED
         </div>
     </div>
 
     <div id="stats">
         COINS: <span id="coin-meter">1000</span><br>
-        <small style="color: #666">Cost: 200 | Win: +5000</small>
+        DIAMONDS: <span id="diamond-meter">0</span><br>
+        <small style="color: #aaa">Cost: <span id="cost-display">200</span> | Win: +5000</small>
     </div>
 
     <!-- Main Game Area -->
     <div id="game-frame">
         <div id="roller-container">
+            <!-- Hanging Mystery Box Charm -->
+            <div id="hanging-charm">📦 MYSTERY BOX ACTIVE</div>
             <div id="roller-text">READY</div>
         </div>
 
         <div class="btn-container">
             <button id="roll-btn" onclick="handleRoll()">ROLL</button>
-            <button id="restart-btn" onclick="restartGame()">REPLAY / REFILL</button>
+            <button id="shop-toggle-btn" onclick="toggleShop()">CYBER SHOP</button>
+            <button id="diamond-shop-btn" onclick="toggleDiamondShop()">DIAMOND SHOP</button>
+            <button id="admin-shop-btn" onclick="toggleAdminShop()">ADMIN SHOP</button>
+            <button id="manual-restart-btn" onclick="promptRestart()">REPLAY / REFILL</button>
+            <button id="restart-btn" onclick="promptRestart()">REPLAY / REFILL</button>
             <div id="status-msg"></div>
+        </div>
+    </div>
+
+    <!-- Secret Input Box (Bottom Right Corner) -->
+    <div id="secret-box-container">
+        <input type="text" id="secret-input" placeholder="Secret Code...">
+        <button id="secret-submit" onclick="checkSecretCode()">GO</button>
+    </div>
+
+    <!-- Double Ask / Confirmation Modal for Restart -->
+    <div id="confirm-modal" class="modal">
+        <div class="confirm-content">
+            <h2 style="color: var(--restart-color); margin-top:0;">REPLAY CONFIRMATION</h2>
+            <p style="font-size: 14px; color: #aaa;" id="confirm-text">Are you sure you want to reset/replay?</p>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button onclick="executeRestart()" style="border-color: var(--restart-color); color: var(--restart-color);">YES</button>
+                <button onclick="closeConfirmModal()" style="border-color: #aaa; color: #aaa;">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cyber Shop Modal -->
+    <div id="shop-modal" class="modal">
+        <div class="shop-content">
+            <h2 style="color: var(--shop-color); margin-top:0; text-shadow: var(--shop-glow);">CYBER SHOP</h2>
+            <p style="font-size: 12px; color: #aaa;">Equip or unequip upgrades anytime!</p>
+            
+            <div class="shop-item">
+                <div style="text-align: left;">
+                    <strong>📦 Mystery Box Charm</strong><br><small style="color:#aaa;">+2% to all non-null odds</small>
+                </div>
+                <button onclick="toggleUpgrade('charm')" id="btn-charm">BUY (6000)</button>
+            </div>
+
+            <div class="shop-item">
+                <div style="text-align: left;">
+                    <strong>Discount Pass</strong><br><small style="color:#aaa;">Roll Cost -50</small>
+                </div>
+                <button onclick="toggleUpgrade('discount')" id="btn-discount">BUY (8500)</button>
+            </div>
+
+            <div class="shop-item">
+                <div style="text-align: left;">
+                    <strong>Coin Booster</strong><br><small style="color:#aaa;">Instant +1,000 Coins</small>
+                </div>
+                <button onclick="toggleUpgrade('booster')" id="btn-booster">BUY (7000)</button>
+            </div>
+
+            <button class="close-shop" onclick="toggleShop()">RESUME GAME</button>
+        </div>
+    </div>
+
+    <!-- Diamond Shop Modal -->
+    <div id="diamond-shop-modal" class="modal">
+        <div class="diamond-content">
+            <h2 style="color: var(--diamond-color); margin-top:0; text-shadow: var(--diamond-glow);">DIAMOND SHOP</h2>
+            <p style="font-size: 12px; color: #aaa;">Trade your currency for ultimate perks!</p>
+            
+            <div class="diamond-item">
+                <div style="text-align: left;">
+                    <strong>Convert Coins to Diamond</strong><br><small style="color:#aaa;">Cost: 10,000 Coins</small>
+                </div>
+                <button onclick="buyDiamondWithCoins()">GET 1 💎</button>
+            </div>
+
+            <div class="diamond-item">
+                <div style="text-align: left;">
+                    <strong>Admin Shop Pass</strong><br><small style="color:#aaa;">Unlock Admin Shop permanently</small>
+                </div>
+                <button onclick="buyAdminShopWithDiamonds()" id="buy-admin-pass">200 💎</button>
+            </div>
+
+            <button class="close-diamond" onclick="toggleDiamondShop()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Admin Shop Modal -->
+    <div id="admin-shop-modal" class="modal">
+        <div class="admin-shop-content">
+            <h2 style="color: var(--admin-color); margin-top:0; text-shadow: var(--admin-glow);">ADMIN SHOP</h2>
+            <p style="font-size: 12px; color: #aaa;">Unlimited free resources & toggles!</p>
+            
+            <div class="admin-item">
+                <div style="text-align: left;">
+                    <strong>100M Free Coins</strong><br><small style="color:#aaa;">Take anytime</small>
+                </div>
+                <button onclick="adminClaimCoins()">TAKE</button>
+            </div>
+
+            <div class="admin-item">
+                <div style="text-align: left;">
+                    <strong>100M Free Diamonds</strong><br><small style="color:#aaa;">Take anytime</small>
+                </div>
+                <button onclick="adminClaimDiamonds()">TAKE</button>
+            </div>
+
+            <div class="admin-item">
+                <div style="text-align: left;">
+                    <strong>100% Luck Mode</strong><br><small style="color:#aaa;">Guaranteed Jackpot & Diamonds</small>
+                </div>
+                <button onclick="toggleLuck()" id="luck-toggle-btn">EQUIP</button>
+            </div>
+
+            <button class="close-admin" onclick="toggleAdminShop()">CLOSE ADMIN SHOP</button>
         </div>
     </div>
 
     <div id="credits">MADE BY PARTH</div>
 
     <script>
-        let coins = 1000;
-        const rollCost = 200;
-        const jackpotWin = 5000;
+        // Game State with LocalStorage
+        let coins = localStorage.getItem('parth_neon_coins') !== null ? parseInt(localStorage.getItem('parth_neon_coins')) : 1000;
+        let diamonds = localStorage.getItem('parth_neon_diamonds') !== null ? parseInt(localStorage.getItem('parth_neon_diamonds')) : 0;
+        let rollCost = localStorage.getItem('parth_neon_cost') !== null ? parseInt(localStorage.getItem('parth_neon_cost')) : 200;
         
+        let charmPurchased = localStorage.getItem('parth_neon_charm_bought') === 'true';
+        let charmEquipped = localStorage.getItem('parth_neon_charm_equipped') === 'true';
+        
+        let discountPurchased = localStorage.getItem('parth_neon_disc_bought') === 'true';
+        let discountEquipped = localStorage.getItem('parth_neon_disc_equipped') === 'true';
+        
+        let boosterPurchased = localStorage.getItem('parth_neon_boost_bought') === 'true';
+        let boosterEquipped = localStorage.getItem('parth_neon_boost_equipped') === 'true';
+        
+        let adminShopUnlocked = localStorage.getItem('parth_neon_admin_unlocked') === 'true';
+        let isLuckEquipped = localStorage.getItem('parth_neon_luck') === 'true';
+        
+        // Restart stage counter for double asking
+        let restartStep = 1;
+
         const frame = document.getElementById('game-frame');
         const roller = document.getElementById('roller-text');
         const coinDisplay = document.getElementById('coin-meter');
+        const diamondDisplay = document.getElementById('diamond-meter');
+        const costDisplay = document.getElementById('cost-display');
         const rollBtn = document.getElementById('roll-btn');
         const restartBtn = document.getElementById('restart-btn');
+        const manualRestartBtn = document.getElementById('manual-restart-btn');
+        const shopBtn = document.getElementById('shop-toggle-btn');
+        const diamondShopBtn = document.getElementById('diamond-shop-btn');
+        const adminShopBtn = document.getElementById('admin-shop-btn');
         const statusMsg = document.getElementById('status-msg');
+        const shopModal = document.getElementById('shop-modal');
+        const diamondShopModal = document.getElementById('diamond-shop-modal');
+        const adminShopModal = document.getElementById('admin-shop-modal');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmText = document.getElementById('confirm-text');
+        const hangingCharm = document.getElementById('hanging-charm');
+        const secretInput = document.getElementById('secret-input');
+        const luckToggleBtn = document.getElementById('luck-toggle-btn');
+        const secretBoxContainer = document.getElementById('secret-box-container');
 
         function updateUI() {
             coinDisplay.innerText = coins;
+            diamondDisplay.innerText = diamonds;
             
-            if (coins < rollCost) {
+            let currentCost = discountEquipped ? Math.max(50, rollCost - 50) : rollCost;
+            costDisplay.innerText = currentCost;
+            
+            localStorage.setItem('parth_neon_coins', coins);
+            localStorage.setItem('parth_neon_diamonds', diamonds);
+            localStorage.setItem('parth_neon_cost', rollCost);
+            localStorage.setItem('parth_neon_charm_bought', charmPurchased);
+            localStorage.setItem('parth_neon_charm_equipped', charmEquipped);
+            localStorage.setItem('parth_neon_disc_bought', discountPurchased);
+            localStorage.setItem('parth_neon_disc_equipped', discountEquipped);
+            localStorage.setItem('parth_neon_boost_bought', boosterPurchased);
+            localStorage.setItem('parth_neon_boost_equipped', boosterEquipped);
+            localStorage.setItem('parth_neon_admin_unlocked', adminShopUnlocked);
+            localStorage.setItem('parth_neon_luck', isLuckEquipped);
+
+            let jVal = charmEquipped ? 5 : 3;
+            let dVal = charmEquipped ? 2.5 : 0.5;
+            let c600 = charmEquipped ? 7 : 5;
+            let c500 = charmEquipped ? 12 : 10;
+            let c250 = charmEquipped ? 12 : 10;
+            let c100 = charmEquipped ? 19 : 17;
+            let rVal = charmEquipped ? 22 : 20;
+            let nVal = 100 - (jVal + dVal + c600 + c500 + c250 + c100 + rVal);
+
+            document.getElementById('stat-jackpot').innerText = jVal;
+            document.getElementById('stat-diamond').innerText = dVal;
+            document.getElementById('stat-600').innerText = c600;
+            document.getElementById('stat-500').innerText = c500;
+            document.getElementById('stat-250').innerText = c250;
+            document.getElementById('stat-100').innerText = c100;
+            document.getElementById('stat-reroll').innerText = rVal;
+            document.getElementById('stat-null').innerText = nVal.toFixed(1);
+            
+            if (charmEquipped) {
+                document.getElementById('active-perks').innerText = "MYSTERY BOX: EQUIPPED (+2%)";
+                hangingCharm.style.display = "block";
+            } else {
+                document.getElementById('active-perks').innerText = "MYSTERY BOX: UNEQUIPPED";
+                hangingCharm.style.display = "none";
+            }
+
+            const btnCharm = document.getElementById('btn-charm');
+            if (!charmPurchased) {
+                btnCharm.innerText = "BUY (6000)";
+            } else if (charmEquipped) {
+                btnCharm.innerText = "UNEQUIP";
+            } else {
+                btnCharm.innerText = "EQUIP";
+            }
+
+            const btnDisc = document.getElementById('btn-discount');
+            if (!discountPurchased) {
+                btnDisc.innerText = "BUY (8500)";
+            } else if (discountEquipped) {
+                btnDisc.innerText = "UNEQUIP";
+            } else {
+                btnDisc.innerText = "EQUIP";
+            }
+
+            const btnBoost = document.getElementById('btn-booster');
+            if (!boosterPurchased) {
+                btnBoost.innerText = "BUY (7000)";
+            } else if (boosterEquipped) {
+                btnBoost.innerText = "UNEQUIP";
+            } else {
+                btnBoost.innerText = "EQUIP";
+            }
+
+            if (adminShopUnlocked) {
+                adminShopBtn.style.display = "block";
+                secretBoxContainer.style.display = "none";
+                document.getElementById('buy-admin-pass').innerText = "UNLOCKED";
+                document.getElementById('buy-admin-pass').disabled = true;
+            } else {
+                adminShopBtn.style.display = "none";
+                secretBoxContainer.style.display = "flex";
+                document.getElementById('buy-admin-pass').innerText = "200 💎";
+                document.getElementById('buy-admin-pass').disabled = false;
+            }
+
+            if (isLuckEquipped) {
+                luckToggleBtn.innerText = "UNEQUIP";
+                luckToggleBtn.style.borderColor = "#00ffcc";
+                luckToggleBtn.style.color = "#00ffcc";
+            } else {
+                luckToggleBtn.innerText = "EQUIP";
+                luckToggleBtn.style.borderColor = "var(--admin-color)";
+                luckToggleBtn.style.color = "var(--admin-color)";
+            }
+
+            if (coins < currentCost) {
                 rollBtn.style.display = "none";
                 restartBtn.style.display = "block";
                 statusMsg.innerText = "YOU ARE BROKE";
@@ -232,12 +693,164 @@
             }
         }
 
-        function restartGame() {
-            coins = 1000;
-            roller.innerText = "READY";
-            roller.style.color = "var(--neon-color)";
-            roller.style.textShadow = "var(--neon-glow)";
-            statusMsg.innerText = "COINS RESET TO 500";
+        function toggleShop() {
+            shopModal.style.display = shopModal.style.display === "flex" ? "none" : "flex";
+        }
+
+        function toggleDiamondShop() {
+            diamondShopModal.style.display = diamondShopModal.style.display === "flex" ? "none" : "flex";
+        }
+
+        function toggleAdminShop() {
+            adminShopModal.style.display = adminShopModal.style.display === "flex" ? "none" : "flex";
+        }
+
+        // Double Ask Restart Functions
+        function promptRestart() {
+            restartStep = 1;
+            confirmText.innerText = "Are you sure you want to completely restart? All coins, diamonds, and purchased passes will be wiped!";
+            confirmModal.style.display = "flex";
+        }
+
+        function executeRestart() {
+            if (restartStep === 1) {
+                restartStep = 2;
+                confirmText.innerText = "Wait! Are you REALLY sure? This will remove your Admin Shop access, set diamonds to 0, and reset all money!";
+            } else {
+                confirmModal.style.display = "none";
+                
+                // Complete Wipe of progression and purchases as requested
+                coins = 1000;
+                diamonds = 0;
+                rollCost = 200;
+                charmPurchased = false;
+                charmEquipped = false;
+                discountPurchased = false;
+                discountEquipped = false;
+                boosterPurchased = false;
+                boosterEquipped = false;
+                adminShopUnlocked = false;
+                isLuckEquipped = false;
+                
+                // Clear localStorage completely for a fresh save state
+                localStorage.clear();
+
+                roller.innerText = "READY";
+                roller.style.color = "var(--neon-color)";
+                roller.style.textShadow = "var(--neon-glow)";
+                statusMsg.innerText = "GAME RESTARTED & WIPED";
+                updateUI();
+            }
+        }
+
+        function closeConfirmModal() {
+            confirmModal.style.display = "none";
+        }
+
+        function checkSecretCode() {
+            const val = secretInput.value.trim();
+            if (val === "parth=pure gambler") {
+                adminShopUnlocked = true;
+                statusMsg.innerText = "ADMIN SHOP UNLOCKED VIA CODE!";
+                secretInput.value = "";
+                updateUI();
+                toggleAdminShop();
+            } else {
+                statusMsg.innerText = "INVALID CODE";
+                secretInput.value = "";
+            }
+        }
+
+        secretInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkSecretCode();
+            }
+        });
+
+        function buyDiamondWithCoins() {
+            if (coins >= 10000) {
+                coins -= 10000;
+                diamonds += 1;
+                statusMsg.innerText = "CONVERTED 10,000 COINS TO 1 DIAMOND!";
+                updateUI();
+                spawnParticles('diamond-particle');
+            } else {
+                statusMsg.innerText = "NEED 10,000 COINS!";
+            }
+        }
+
+        function buyAdminShopWithDiamonds() {
+            if (diamonds >= 200 && !adminShopUnlocked) {
+                diamonds -= 200;
+                adminShopUnlocked = true;
+                statusMsg.innerText = "ADMIN SHOP UNLOCKED WITH DIAMONDS!";
+                updateUI();
+                toggleDiamondShop();
+                toggleAdminShop();
+            } else {
+                statusMsg.innerText = "NEED 200 DIAMONDS!";
+            }
+        }
+
+        function toggleUpgrade(type) {
+            if (type === 'charm') {
+                if (!charmPurchased) {
+                    if (coins >= 6000) {
+                        coins -= 6000;
+                        charmPurchased = true;
+                        charmEquipped = true;
+                        statusMsg.innerText = "MYSTERY BOX BOUGHT & EQUIPPED!";
+                    } else { statusMsg.innerText = "NOT ENOUGH COINS!"; }
+                } else {
+                    charmEquipped = !charmEquipped;
+                    statusMsg.innerText = charmEquipped ? "MYSTERY BOX EQUIPPED!" : "MYSTERY BOX UNEQUIPPED!";
+                }
+            } else if (type === 'discount') {
+                if (!discountPurchased) {
+                    if (coins >= 8500) {
+                        coins -= 8500;
+                        discountPurchased = true;
+                        discountEquipped = true;
+                        statusMsg.innerText = "DISCOUNT PASS BOUGHT & EQUIPPED!";
+                    } else { statusMsg.innerText = "NOT ENOUGH COINS!"; }
+                } else {
+                    discountEquipped = !discountEquipped;
+                    statusMsg.innerText = discountEquipped ? "DISCOUNT PASS EQUIPPED!" : "DISCOUNT PASS UNEQUIPPED!";
+                }
+            } else if (type === 'booster') {
+                if (!boosterPurchased) {
+                    if (coins >= 7000) {
+                        coins -= 7000;
+                        boosterPurchased = true;
+                        boosterEquipped = true;
+                        coins += 8000;
+                        statusMsg.innerText = "COIN BOOSTER CLAIMED!";
+                    } else { statusMsg.innerText = "NOT ENOUGH COINS!"; }
+                } else {
+                    boosterEquipped = !boosterEquipped;
+                    statusMsg.innerText = boosterEquipped ? "COIN BOOSTER EQUIPPED!" : "COIN BOOSTER UNEQUIPPED!";
+                }
+            }
+            updateUI();
+        }
+
+        function adminClaimCoins() {
+            coins += 100000000;
+            statusMsg.innerText = "+100M COINS CLAIMED!";
+            updateUI();
+            spawnParticles('star');
+        }
+
+        function adminClaimDiamonds() {
+            diamonds += 100000000;
+            statusMsg.innerText = "+100M DIAMONDS CLAIMED!";
+            updateUI();
+            spawnParticles('diamond-particle');
+        }
+
+        function toggleLuck() {
+            isLuckEquipped = !isLuckEquipped;
+            statusMsg.innerText = isLuckEquipped ? "100% LUCK EQUIPPED!" : "100% LUCK UNEQUIPPED!";
             updateUI();
         }
 
@@ -246,7 +859,7 @@
             for (let i = 0; i < 30; i++) {
                 const p = document.createElement('div');
                 p.className = `particle ${type}`;
-                p.innerText = type === 'star' ? '⭐' : '🗑️';
+                p.innerText = type === 'star' ? '⭐' : (type === 'diamond-particle' ? '💎' : '🗑️');
                 const tx = (Math.random() - 0.5) * 800;
                 const ty = (Math.random() - 0.5) * 800;
                 p.style.setProperty('--tx', `${tx}px`);
@@ -259,62 +872,132 @@
         }
 
         async function handleRoll(isReRoll = false) {
+            let currentCost = discountEquipped ? Math.max(50, rollCost - 50) : rollCost;
             if (!isReRoll) {
-                if (coins < rollCost) return;
-                coins -= rollCost;
+                if (coins < currentCost) return;
+                coins -= currentCost;
                 updateUI();
             }
 
-            // Start Effects
             rollBtn.disabled = true;
-            frame.classList.add('zoomed'); // Screen gets BIG
+            shopBtn.disabled = true;
+            diamondShopBtn.disabled = true;
+            manualRestartBtn.disabled = true;
+            if(adminShopUnlocked) adminShopBtn.disabled = true;
+            frame.classList.add('zoomed');
             statusMsg.innerText = isReRoll ? "SUSPENSE RE-ROLL..." : "ROLLING...";
             roller.classList.add('spinning');
             roller.style.color = "white";
 
             const cycle = setInterval(() => {
-                const items = ["NULL", "JACKPOT", "RE-ROLL", "VOID", "BROKE,FAHHHHHH"];
+                const items = ["NULL", "JACKPOT & DIAMONDS", "DIAMOND DROP", "600 COINS", "500 COINS", "250 COINS", "100 COINS", "RE-ROLL"];
                 roller.innerText = items[Math.floor(Math.random() * items.length)];
             }, 60);
 
-            // Re-rolls take longer to increase tension
             const waitTime = isReRoll ? 3500 : 1800;
 
             setTimeout(() => {
                 clearInterval(cycle);
                 roller.classList.remove('spinning');
-                frame.classList.remove('zoomed'); // Screen returns to NORMAL
+                frame.classList.remove('zoomed');
+                shopBtn.disabled = false;
+                diamondShopBtn.disabled = false;
+                manualRestartBtn.disabled = false;
+                if(adminShopUnlocked) adminShopBtn.disabled = false;
                 calculateOutcome(isReRoll);
             }, waitTime);
         }
 
         function calculateOutcome(isReRoll) {
-            let result;
-            const chance = Math.random() * 100;
+            let result = "NULL";
 
-            if (!isReRoll) {
-                // REAL ODDS: 3% Jackpot, 27% Re-Roll, 70% Null
-                if (chance < 3) result = "JACKPOT";
-                else if (chance < 8) result = "RE-ROLL";
-                else result = "NULL";
+            if (isLuckEquipped) {
+                result = "JACKPOT & DIAMONDS";
             } else {
-                // RE-ROLL ODDS: 40% Jackpot, 60% Null
-                if (chance < 10) result = "JACKPOT";
-                else result = "NULL";
+                const chance = Math.random() * 100;
+                let jLimit = charmEquipped ? 5 : 3;
+                let dLimit = jLimit + (charmEquipped ? 2.5 : 0.5);
+                let c600Limit = dLimit + (charmEquipped ? 7 : 5);
+                let c500Limit = c600Limit + (charmEquipped ? 12 : 10);
+                let c250Limit = c500Limit + (charmEquipped ? 12 : 10);
+                let c100Limit = c250Limit + (charmEquipped ? 19 : 17);
+                let rLimit = c100Limit + (charmEquipped ? 22 : 20);
+
+                if (chance < jLimit) {
+                    result = "JACKPOT";
+                } else if (chance < dLimit) {
+                    result = "DIAMOND DROP";
+                } else if (chance < c600Limit) {
+                    result = "600 COINS";
+                } else if (chance < c500Limit) {
+                    result = "500 COINS";
+                } else if (chance < c250Limit) {
+                    result = "250 COINS";
+                } else if (chance < c100Limit) {
+                    result = "100 COINS";
+                } else if (chance < rLimit) {
+                    result = "RE-ROLL";
+                } else {
+                    result = "NULL";
+                }
             }
 
             roller.innerText = result;
 
-            if (result === "JACKPOT") {
+            if (result === "JACKPOT & DIAMONDS") {
                 roller.style.color = "var(--jackpot-color)";
                 roller.style.textShadow = "var(--jackpot-glow)";
-                statusMsg.innerText = "BIG WIN! +1000 COINS";
-                coins += jackpotWin;
+                statusMsg.innerText = "ADMIN LUCK: +5000 COINS & +10 DIAMONDS!";
+                coins += 5000;
+                diamonds += 10;
+                spawnParticles('star');
+                spawnParticles('diamond-particle');
+            }
+            else if (result === "JACKPOT") {
+                roller.style.color = "var(--jackpot-color)";
+                roller.style.textShadow = "var(--jackpot-glow)";
+                statusMsg.innerText = "JACKPOT! +5000 COINS";
+                coins += 5000;
                 spawnParticles('star');
             } 
+            else if (result === "DIAMOND DROP") {
+                roller.style.color = "var(--diamond-color)";
+                roller.style.textShadow = "var(--diamond-glow)";
+                statusMsg.innerText = "RARE DIAMOND DROP! +10 DIAMONDS";
+                diamonds += 10;
+                spawnParticles('diamond-particle');
+            }
+            else if (result === "600 COINS") {
+                roller.style.color = "#ffd700";
+                roller.style.textShadow = "0 0 10px #ffd700";
+                statusMsg.innerText = "WIN! +600 COINS";
+                coins += 600;
+                spawnParticles('star');
+            }
+            else if (result === "500 COINS") {
+                roller.style.color = "#ffd700";
+                roller.style.textShadow = "0 0 10px #ffd700";
+                statusMsg.innerText = "WIN! +500 COINS";
+                coins += 500;
+                spawnParticles('star');
+            }
+            else if (result === "250 COINS") {
+                roller.style.color = "#ffd700";
+                roller.style.textShadow = "0 0 10px #ffd700";
+                statusMsg.innerText = "WIN! +250 COINS";
+                coins += 250;
+                spawnParticles('star');
+            }
+            else if (result === "100 COINS") {
+                roller.style.color = "#ffd700";
+                roller.style.textShadow = "0 0 10px #ffd700";
+                statusMsg.innerText = "WIN! +100 COINS";
+                coins += 100;
+                spawnParticles('star');
+            }
             else if (result === "RE-ROLL") {
                 roller.style.color = "#fff";
-                statusMsg.innerText = "CHANCE DETECTED...";
+                statusMsg.innerText = "RE-ROLL TRIGGERED...";
                 setTimeout(() => handleRoll(true), 1200);
                 return; 
             } 
