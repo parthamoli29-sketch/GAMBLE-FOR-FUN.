@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Void | Parth Edition</title>
+    <style>
+        :root {
+            --neon-color: #00ffcc;
+            --neon-glow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+            --jackpot-color: #ff00ff;
+            --jackpot-glow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+            --restart-color: #ff4444;
+        }
+
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Container for Zoom Effect */
+        #game-frame {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            height: 100%;
+        }
+
+        .zoomed {
+            transform: scale(1.5); /* Makes the screen big during roll */
+        }
+
+        /* Branding */
+        #credits {
+            position: fixed;
+            bottom: 20px;
+            color: var(--neon-color);
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 3px;
+            pointer-events: none;
+        }
+
+        /* Coin Meter */
+        #stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            border: 2px solid var(--neon-color);
+            padding: 10px 20px;
+            box-shadow: var(--neon-glow);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10;
+        }
+
+        #coin-meter {
+            font-size: 28px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Probability Section (Fake Visuals) */
+        #probability-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            border: 1px solid #444;
+            padding: 15px;
+            font-size: 13px;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        /* The Roller */
+        #roller-container {
+            width: 350px;
+            height: 150px;
+            border: 4px solid var(--neon-color);
+            border-radius: 15px;
+            box-shadow: var(--neon-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #0a0a0a;
+            margin-bottom: 40px;
+        }
+
+        #roller-text {
+            font-size: 45px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: var(--neon-glow);
+            color: var(--neon-color);
+        }
+
+        .spinning { 
+            animation: flicker 0.3s infinite alternate; 
+            filter: blur(1px);
+        }
+
+        @keyframes flicker {
+            from { opacity: 1; transform: translateY(-2px); }
+            to { opacity: 0.4; transform: translateY(2px); }
+        }
+
+        /* Buttons */
+        .btn-container { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+
+        button {
+            background: transparent;
+            border: 2px solid var(--neon-color);
+            color: var(--neon-color);
+            padding: 15px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 5px var(--neon-color);
+            text-transform: uppercase;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--neon-color);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+
+        #restart-btn {
+            border-color: var(--restart-color);
+            color: var(--restart-color);
+            display: none;
+        }
+
+        #restart-btn:hover {
+            background: var(--restart-color);
+            color: white;
+            box-shadow: 0 0 20px var(--restart-color);
+        }
+
+        button:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        /* Particles */
+        .particle { position: absolute; pointer-events: none; z-index: 100; }
+        .star { animation: flyOut 1.2s forwards; font-size: 24px; }
+        .trash { animation: fallDown 1.5s forwards; font-size: 20px; }
+
+        @keyframes flyOut { 
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(360deg) scale(0); opacity: 0; } 
+        }
+        @keyframes fallDown { 
+            0% { transform: translateY(0); }
+            100% { transform: translate(var(--tx), 600px) rotate(180deg); opacity: 0; } 
+        }
+
+        #status-msg { height: 30px; font-weight: bold; color: #aaa; text-transform: uppercase; margin-top: 10px;}
+    </style>
+</head>
+<body>
+
+    <!-- UI Overlays -->
+    <div id="probability-display">
+        <strong style="color:var(--neon-color)">SYSTEM CHANCES:</strong><br>
+        • Null: 50%<br>
+        • Re-Roll: 30%<br>
+        • Jackpot: 20%<br>
+        <div style="border-top: 1px solid #444; margin-top: 10px; font-size: 11px; color: #ff00ff; padding-top: 5px;">
+            RE-ROLL ACTIVE:<br>
+            Probability boost detected...
+        </div>
+    </div>
+
+    <div id="stats">
+        COINS: <span id="coin-meter">1000</span><br>
+        <small style="color: #666">Cost: 200 | Win: +5000</small>
+    </div>
+
+    <!-- Main Game Area -->
+    <div id="game-frame">
+        <div id="roller-container">
+            <div id="roller-text">READY</div>
+        </div>
+
+        <div class="btn-container">
+            <button id="roll-btn" onclick="handleRoll()">ROLL</button>
+            <button id="restart-btn" onclick="restartGame()">REPLAY / REFILL</button>
+            <div id="status-msg"></div>
+        </div>
+    </div>
+
+    <div id="credits">MADE BY PARTH</div>
+
+    <script>
+        let coins = 1000;
+        const rollCost = 200;
+        const jackpotWin = 5000;
+        
+        const frame = document.getElementById('game-frame');
+        const roller = document.getElementById('roller-text');
+        const coinDisplay = document.getElementById('coin-meter');
+        const rollBtn = document.getElementById('roll-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const statusMsg = document.getElementById('status-msg');
+
+        function updateUI() {
+            coinDisplay.innerText = coins;
+            
+            if (coins < rollCost) {
+                rollBtn.style.display = "none";
+                restartBtn.style.display = "block";
+                statusMsg.innerText = "YOU ARE BROKE";
+            } else {
+                rollBtn.style.display = "block";
+                restartBtn.style.display = "none";
+                rollBtn.disabled = false;
+            }
+        }
+
+        function restartGame() {
+            coins = 1000;
+            roller.innerText = "READY";
+            roller.style.color = "var(--neon-color)";
+            roller.style.textShadow = "var(--neon-glow)";
+            statusMsg.innerText = "COINS RESET TO 500";
+            updateUI();
+        }
+
+        function spawnParticles(type) {
+            const rect = document.getElementById('roller-container').getBoundingClientRect();
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = `particle ${type}`;
+                p.innerText = type === 'star' ? '⭐' : '🗑️';
+                const tx = (Math.random() - 0.5) * 800;
+                const ty = (Math.random() - 0.5) * 800;
+                p.style.setProperty('--tx', `${tx}px`);
+                p.style.setProperty('--ty', `${ty}px`);
+                p.style.left = `${rect.left + rect.width/2}px`;
+                p.style.top = `${rect.top + rect.height/2}px`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 2000);
+            }
+        }
+
+        async function handleRoll(isReRoll = false) {
+            if (!isReRoll) {
+                if (coins < rollCost) return;
+                coins -= rollCost;
+                updateUI();
+            }
+
+            // Start Effects
+            rollBtn.disabled = true;
+            frame.classList.add('zoomed'); // Screen gets BIG
+            statusMsg.innerText = isReRoll ? "SUSPENSE RE-ROLL..." : "ROLLING...";
+            roller.classList.add('spinning');
+            roller.style.color = "white";
+
+            const cycle = setInterval(() => {
+                const items = ["NULL", "JACKPOT", "RE-ROLL", "VOID", "BROKE,FAHHHHHH"];
+                roller.innerText = items[Math.floor(Math.random() * items.length)];
+            }, 60);
+
+            // Re-rolls take longer to increase tension
+            const waitTime = isReRoll ? 3500 : 1800;
+
+            setTimeout(() => {
+                clearInterval(cycle);
+                roller.classList.remove('spinning');
+                frame.classList.remove('zoomed'); // Screen returns to NORMAL
+                calculateOutcome(isReRoll);
+            }, waitTime);
+        }
+
+        function calculateOutcome(isReRoll) {
+            let result;
+            const chance = Math.random() * 100;
+
+            if (!isReRoll) {
+                // REAL ODDS: 3% Jackpot, 27% Re-Roll, 70% Null
+                if (chance < 3) result = "JACKPOT";
+                else if (chance < 8) result = "RE-ROLL";
+                else result = "NULL";
+            } else {
+                // RE-ROLL ODDS: 40% Jackpot, 60% Null
+                if (chance < 10) result = "JACKPOT";
+                else result = "NULL";
+            }
+
+            roller.innerText = result;
+
+            if (result === "JACKPOT") {
+                roller.style.color = "var(--jackpot-color)";
+                roller.style.textShadow = "var(--jackpot-glow)";
+                statusMsg.innerText = "BIG WIN! +1000 COINS";
+                coins += jackpotWin;
+                spawnParticles('star');
+            } 
+            else if (result === "RE-ROLL") {
+                roller.style.color = "#fff";
+                statusMsg.innerText = "CHANCE DETECTED...";
+                setTimeout(() => handleRoll(true), 1200);
+                return; 
+            } 
+            else {
+                roller.style.color = "#333";
+                roller.style.textShadow = "none";
+                statusMsg.innerText = "BETTER LUCK NEXT TIME";
+                spawnParticles('trash');
+            }
+
+            updateUI();
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
